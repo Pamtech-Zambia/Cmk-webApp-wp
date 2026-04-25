@@ -11,6 +11,7 @@ import {
   ImageIcon,
   ArrowLeft,
   Package,
+  MessageCircleHeart,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -136,12 +137,20 @@ export function CmkDashboard({ initialProducts }: { initialProducts: Product[] }
               <p className="text-xs text-muted-foreground">Private dashboard</p>
             </div>
           </div>
-          <Button asChild variant="ghost" size="sm" className="rounded-full">
-            <Link href="/">
-              <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
-              Back to site
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button asChild variant="outline" size="sm" className="rounded-full">
+              <Link href="/cmk/wishes">
+                <MessageCircleHeart className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Wishes
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="rounded-full">
+              <Link href="/">
+                <ArrowLeft className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Back to site
+              </Link>
+            </Button>
+          </div>
         </div>
       </header>
 
