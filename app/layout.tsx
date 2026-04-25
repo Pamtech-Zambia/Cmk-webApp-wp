@@ -1,32 +1,29 @@
-import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import { Analytics } from '@vercel/analytics/next'
-import TopBar from '@/components/TopBar'
-import './globals.css'
+import type { Metadata } from "next"
+import { Geist, Fraunces } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import { Toaster } from "@/components/ui/sonner"
+import "./globals.css"
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+})
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  weight: ["400", "500", "600", "700", "800", "900"],
+})
 
 export const metadata: Metadata = {
-  title: 'CMK Baking - Chimwemwe\'s Birthday Celebration',
-  description: 'Celebrate Chimwemwe\'s birthday on April 25th with CMK Baking. Share wishes, memories, and love. A special gift website.',
-  generator: 'v0.app',
-  icons: {
-    icon: [
-      {
-        url: '/icon-light-32x32.png',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        url: '/icon-dark-32x32.png',
-        media: '(prefers-color-scheme: dark)',
-      },
-      {
-        url: '/icon.svg',
-        type: 'image/svg+xml',
-      },
-    ],
-    apple: '/apple-icon.png',
+  title: "Happy Birthday Chimwemwe — A Celebration",
+  description:
+    "Send a birthday wish to Chimwemwe and order handcrafted cakes, cookies, and pastries from CMK Baking. Delivered with love on April 25th.",
+  generator: "v0.app",
+  openGraph: {
+    title: "Happy Birthday Chimwemwe",
+    description: "Send a birthday wish and order a cake from CMK Baking.",
+    type: "website",
   },
 }
 
@@ -36,11 +33,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="bg-background">
-      <body className="font-sans antialiased bg-gradient-to-br from-orange-50 via-pink-50 to-yellow-50">
-        <TopBar />
+    <html lang="en" className={`${geist.variable} ${fraunces.variable} bg-background`}>
+      <body className="font-sans antialiased min-h-screen">
         {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
+        <Toaster position="top-center" richColors />
+        {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>
   )
