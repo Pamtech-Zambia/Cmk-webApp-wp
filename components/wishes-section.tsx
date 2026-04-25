@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Heart, Send } from "lucide-react"
+import Link from "next/link"
+import { ArrowRight, Heart, Send } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -190,6 +191,17 @@ export function WishesSection() {
                 </li>
               ))}
             </ul>
+          )}
+
+          {wishes.length > 0 && (
+            <div className="mt-8 flex justify-center">
+              <Button asChild variant="outline" size="lg" className="rounded-full">
+                <Link href="/wishes">
+                  View all wishes
+                  <ArrowRight className="ml-1.5 h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
           )}
         </div>
       </div>

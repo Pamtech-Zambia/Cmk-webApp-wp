@@ -8,10 +8,11 @@ import { SITE_CONFIG } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
 const NAV_ITEMS = [
-  { href: "#celebrate", label: "Celebrate" },
-  { href: "#wishes", label: "Wishes" },
-  { href: "#store", label: "Order a Cake" },
-  { href: "#about", label: "About" },
+  { href: "/#celebrate", label: "Celebrate" },
+  { href: "/#wishes", label: "Send a Wish" },
+  { href: "/wishes", label: "All Wishes" },
+  { href: "/#store", label: "Order a Cake" },
+  { href: "/#about", label: "About" },
 ]
 
 export function SiteHeader() {
