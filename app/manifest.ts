@@ -15,21 +15,21 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ["food", "lifestyle", "shopping"],
     icons: [
       {
-        src: "/icon-192.jpg",
+        src: "/cmk-logo.png",
         sizes: "192x192",
-        type: "image/jpeg",
+        type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icon-512.jpg",
+        src: "/cmk-logo.png",
         sizes: "512x512",
-        type: "image/jpeg",
+        type: "image/png",
         purpose: "any",
       },
       {
-        src: "/icon-512.jpg",
+        src: "/cmk-logo.png",
         sizes: "512x512",
-        type: "image/jpeg",
+        type: "image/png",
         purpose: "maskable",
       },
     ],

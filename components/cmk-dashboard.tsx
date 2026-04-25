@@ -4,7 +4,6 @@ import { useRef, useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import {
-  Cake,
   Plus,
   Trash2,
   Upload,
@@ -15,6 +14,7 @@ import {
   X,
 } from "lucide-react"
 import { toast } from "sonner"
+import { BrandLogo } from "@/components/brand-logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -271,9 +271,7 @@ export function CmkDashboard({ initialProducts }: { initialProducts: Product[] }
       <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
           <div className="flex min-w-0 items-center gap-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Cake className="h-5 w-5" aria-hidden="true" />
-            </span>
+            <BrandLogo size="sm" />
             <div className="min-w-0">
               <p className="truncate font-serif text-base font-bold leading-tight sm:text-lg">
                 {SITE_CONFIG.businessName} Admin

@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { Cake, MessageCircle, Heart } from "lucide-react"
+import { MessageCircle, Heart } from "lucide-react"
+import { BrandLogo } from "@/components/brand-logo"
 import { SITE_CONFIG, buildWhatsappUrl } from "@/lib/config"
 
 export function SiteFooter() {
@@ -8,9 +9,7 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-3">
         <div>
           <div className="flex items-center gap-2 font-serif text-xl font-bold">
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <Cake className="h-5 w-5" aria-hidden="true" />
-            </span>
+            <BrandLogo size="sm" />
             {SITE_CONFIG.businessName}
           </div>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">

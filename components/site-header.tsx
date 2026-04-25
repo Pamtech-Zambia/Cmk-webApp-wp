@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Cake, Menu, X } from "lucide-react"
+import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { BrandLogo } from "@/components/brand-logo"
 import { SITE_CONFIG } from "@/lib/config"
 import { cn } from "@/lib/utils"
 
@@ -25,9 +26,7 @@ export function SiteHeader() {
           href="/"
           className="flex items-center gap-2 font-serif text-xl font-bold tracking-tight text-foreground"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Cake className="h-5 w-5" aria-hidden="true" />
-          </span>
+          <BrandLogo size="sm" />
           <span>{SITE_CONFIG.businessName}</span>
         </Link>
 

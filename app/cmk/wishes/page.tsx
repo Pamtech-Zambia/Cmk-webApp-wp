@@ -1,7 +1,8 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeft, MessageCircleHeart, Cake } from "lucide-react"
+import { ArrowLeft, MessageCircleHeart } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
+import { BrandLogo } from "@/components/brand-logo"
 import { Button } from "@/components/ui/button"
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
 import type { Wish } from "@/lib/types"
@@ -39,7 +40,7 @@ export default async function CmkWishesPage() {
             Back to dashboard
           </Link>
           <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold">
-            <Cake className="h-5 w-5 text-primary" aria-hidden />
+            <BrandLogo size="sm" />
             View site
           </Link>
         </div>

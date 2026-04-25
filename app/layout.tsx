@@ -29,11 +29,9 @@ export const metadata: Metadata = {
   },
   formatDetection: { telephone: false },
   icons: {
-    icon: [
-      { url: "/icon-light-32x32.png", media: "(prefers-color-scheme: light)" },
-      { url: "/icon-dark-32x32.png", media: "(prefers-color-scheme: dark)" },
-    ],
-    apple: "/apple-touch-icon.jpg",
+    icon: [{ url: "/cmk-logo.png", type: "image/png" }],
+    shortcut: "/cmk-logo.png",
+    apple: "/cmk-logo.png",
   },
   openGraph: {
     title: "Happy Birthday Chimwemwe",
