@@ -9,13 +9,9 @@ import type { Product } from "@/lib/types"
 import { SITE_CONFIG, buildWhatsappUrl } from "@/lib/config"
 
 function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "MWK",
-    maximumFractionDigits: 0,
-  })
-    .format(price)
-    .replace("MWK", "MK")
+  return `K${new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 2,
+  }).format(price)}`
 }
 
 function buildOrderMessage(p: Product) {

@@ -36,7 +36,7 @@ import { SITE_CONFIG } from "@/lib/config"
 import type { Product } from "@/lib/types"
 
 function formatPrice(price: number) {
-  return `MK ${price.toLocaleString()}`
+  return `K${price.toLocaleString()}`
 }
 
 export function CmkDashboard({ initialProducts }: { initialProducts: Product[] }) {
@@ -152,7 +152,7 @@ export function CmkDashboard({ initialProducts }: { initialProducts: Product[] }
         </Field>
 
         <Field>
-          <FieldLabel htmlFor="p-price">Price (MK)</FieldLabel>
+          <FieldLabel htmlFor="p-price">Price (K)</FieldLabel>
           <Input
             id="p-price"
             type="number"
