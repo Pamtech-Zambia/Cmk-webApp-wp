@@ -8,6 +8,7 @@ import {
   LogOut,
   MessageCircleHeart,
   Package,
+  Settings,
   Sparkles,
   Users,
 } from "lucide-react"
@@ -48,6 +49,8 @@ export function CmkSidebar({ newInquiriesCount = 0 }: { newInquiriesCount?: numb
       badge: newInquiriesCount > 0 ? newInquiriesCount : undefined,
     },
     { href: "/cmk/wishes", label: "Wishes", icon: MessageCircleHeart },
+    { href: "/cmk/admins", label: "Admins", icon: Users },
+    { href: "/cmk/settings", label: "Settings", icon: Settings },
   ]
 
   function isActive(href: string) {
@@ -113,6 +116,18 @@ export function CmkSidebar({ newInquiriesCount = 0 }: { newInquiriesCount?: numb
                 <span>Home</span>
               </Link>
             </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <form action="/auth/sign-out" method="POST">
+              <SidebarMenuButton
+                type="submit"
+                tooltip="Sign out"
+                className="w-full"
+              >
+                <LogOut aria-hidden="true" />
+                <span>Sign out</span>
+              </SidebarMenuButton>
+            </form>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

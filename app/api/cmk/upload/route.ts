@@ -1,9 +1,14 @@
 import { put } from "@vercel/blob"
 import { NextResponse } from "next/server"
+import { requireAdmin } from "@/lib/auth"
 
 export const runtime = "nodejs"
 
 export async function POST(request: Request) {
+  // Verify admin authentication
+  const { error: authError } = await requireAdmin()
+  if (authError) return authError
+
   const file = await request.blob()
   const filename = request.headers.get("x-filename") ?? `product-${Date.now()}`
 
