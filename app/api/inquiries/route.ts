@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
+import { pruneInquiries } from "@/lib/inquiries-cleanup"
 
 export const runtime = "nodejs"
 
@@ -47,5 +48,7 @@ export async function POST(request: Request) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+  // Best-effort cleanup so the table stays small over time.
+  await pruneInquiries()
   return NextResponse.json({ ok: true })
 }
