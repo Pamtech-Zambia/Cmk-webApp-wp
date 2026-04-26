@@ -2,23 +2,17 @@
 
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
-import Link from "next/link"
 import {
   Plus,
   Trash2,
   Upload,
   ImageIcon,
-  ArrowLeft,
   Package,
-  MessageCircleHeart,
-  Sparkles,
   Pencil,
-  Inbox,
   X,
   Cake,
 } from "lucide-react"
 import { toast } from "sonner"
-import { BrandLogo } from "@/components/brand-logo"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -474,74 +468,6 @@ export function CmkDashboard({ initialProducts }: { initialProducts: Product[] }
 
   return (
     <main className="min-h-dvh pb-24 lg:pb-0">
-      {/* Header: compact on mobile, full on desktop */}
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6 sm:py-4">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <BrandLogo size="sm" />
-            <div className="min-w-0">
-              <p className="truncate font-serif text-base font-bold leading-tight sm:text-lg">
-                {SITE_CONFIG.businessName} Admin
-              </p>
-              <p className="hidden text-xs text-muted-foreground sm:block">
-                Private dashboard
-              </p>
-            </div>
-          </div>
-
-          <div className="flex shrink-0 items-center gap-1.5">
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="h-9 rounded-full px-3"
-              aria-label="View customer inquiries"
-            >
-              <Link href="/cmk/inquiries">
-                <Inbox className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
-                <span className="hidden sm:inline">Inquiries</span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="h-9 rounded-full px-3"
-              aria-label="Manage promos"
-            >
-              <Link href="/cmk/promos">
-                <Sparkles className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
-                <span className="hidden sm:inline">Promos</span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="sm"
-              className="h-9 rounded-full px-3"
-              aria-label="View birthday wishes"
-            >
-              <Link href="/cmk/wishes">
-                <MessageCircleHeart className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
-                <span className="hidden sm:inline">Wishes</span>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="ghost"
-              size="sm"
-              className="h-9 rounded-full px-3"
-              aria-label="Back to public site"
-            >
-              <Link href="/">
-                <ArrowLeft className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
-                <span className="hidden sm:inline">Back to site</span>
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </header>
-
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 sm:gap-8 sm:px-6 sm:py-10 lg:grid-cols-5">
         {/* Desktop form column */}
         <aside className="hidden lg:sticky lg:top-24 lg:col-span-2 lg:block lg:h-fit">

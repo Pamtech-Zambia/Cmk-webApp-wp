@@ -1,8 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { ArrowLeft, MessageCircleHeart } from "lucide-react"
+import { MessageCircleHeart } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
-import { BrandLogo } from "@/components/brand-logo"
 import { Button } from "@/components/ui/button"
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
 import type { Wish } from "@/lib/types"
@@ -33,19 +32,6 @@ export default async function CmkWishesPage() {
 
   return (
     <div className="min-h-dvh bg-background">
-      <header className="border-b border-border/60 bg-card/50 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-          <Link href="/cmk" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="h-4 w-4" />
-            Back to dashboard
-          </Link>
-          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold">
-            <BrandLogo size="sm" />
-            View site
-          </Link>
-        </div>
-      </header>
-
       <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14">
         <div className="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
