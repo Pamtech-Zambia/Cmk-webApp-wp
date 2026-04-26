@@ -32,10 +32,29 @@ export function WishesSection() {
   const [submitting, setSubmitting] = useState(false)
   const [name, setName] = useState("")
   const [message, setMessage] = useState("")
+  // null = still resolving; true/false = whether the section should render.
   const [windowOpen, setWindowOpen] = useState<boolean | null>(null)
 
   useEffect(() => {
-    setWindowOpen(isWishesWindowOpen())
+    let cancelled = false
+    const supabase = createClient()
+    async function resolve() {
+      // Read manual override (admin can force on/off). Fall back to auto window.
+      const { data } = await supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "wishes_override")
+        .maybeSingle()
+      if (cancelled) return
+      const override = (data?.value ?? null) as "on" | "off" | null
+      if (override === "on") setWindowOpen(true)
+      else if (override === "off") setWindowOpen(false)
+      else setWindowOpen(isWishesWindowOpen())
+    }
+    resolve()
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {

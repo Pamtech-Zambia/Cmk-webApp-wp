@@ -1,9 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ShoppingBag, MessageCircle, Moon } from "lucide-react"
+import { ShoppingBag, MessageCircle, Moon, SlidersHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -14,20 +14,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { createClient } from "@/lib/supabase/client"
-import type { Product } from "@/lib/types"
+import type { Product, ProductSize } from "@/lib/types"
 import { SITE_CONFIG, buildWhatsappUrl } from "@/lib/config"
 import { getSabbathInfo, SABBATH_CLOSED_MESSAGE } from "@/lib/sabbath"
+import { formatPrice, getMinSizePrice } from "@/lib/product"
+import { InquiryDialog } from "@/components/inquiry-dialog"
 
-function formatPrice(price: number): string {
-  return `K${new Intl.NumberFormat("en-US", {
-    maximumFractionDigits: 2,
-  }).format(price)}`
-}
-
-function buildOrderMessage(p: Product) {
+function buildOrderMessage(p: Product, size?: ProductSize) {
+  const sizeLine = size ? ` (${size.label})` : ""
+  const price = size ? size.price : p.price
   return `Hi ${SITE_CONFIG.businessName}, I'd like to order:
 
-* ${p.name} — ${formatPrice(p.price)}
+* ${p.name}${sizeLine} — ${formatPrice(price)}
 ${p.description ? `(${p.description})\n` : ""}
 Could you please confirm availability and delivery details?
 
@@ -41,6 +39,12 @@ function ProductCard({
   product: Product
   onSabbathClick: () => void
 }) {
+  const sizes = product.sizes ?? []
+  const [selectedIdx, setSelectedIdx] = useState(0)
+  const selectedSize: ProductSize | undefined =
+    sizes.length > 0 ? sizes[selectedIdx] : undefined
+  const displayedPrice = selectedSize ? selectedSize.price : product.price
+
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary">
@@ -70,37 +74,78 @@ function ProductCard({
             {product.name}
           </h3>
           {product.description && (
-            <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-1.5 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
               {product.description}
             </p>
           )}
         </div>
 
+        {sizes.length > 0 && (
+          <div className="-mx-1 flex flex-wrap gap-1.5">
+            {sizes.map((s, i) => {
+              const active = i === selectedIdx
+              return (
+                <button
+                  key={`${s.label}-${i}`}
+                  type="button"
+                  onClick={() => setSelectedIdx(i)}
+                  aria-pressed={active}
+                  className={[
+                    "rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+                    active
+                      ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                      : "border-border bg-background text-foreground hover:border-primary/40 hover:bg-secondary",
+                  ].join(" ")}
+                >
+                  {s.label}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
         <div className="flex items-center justify-between gap-3">
           <span className="font-serif text-xl font-bold text-primary">
-            {formatPrice(product.price)}
+            {formatPrice(displayedPrice)}
           </span>
-          <Button asChild size="sm" className="rounded-full">
-            <a
-              href={buildWhatsappUrl(buildOrderMessage(product))}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                if (getSabbathInfo().isSabbath) {
-                  e.preventDefault()
-                  onSabbathClick()
-                }
-              }}
-            >
-              <MessageCircle className="mr-1.5 h-4 w-4" aria-hidden="true" />
-              Order
-            </a>
-          </Button>
+          <div className="flex items-center gap-2">
+            <InquiryDialog
+              productId={product.id}
+              productName={product.name}
+              sizeLabel={selectedSize?.label ?? null}
+            />
+            <Button asChild size="sm" className="rounded-full">
+              <a
+                href={buildWhatsappUrl(buildOrderMessage(product, selectedSize))}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (getSabbathInfo().isSabbath) {
+                    e.preventDefault()
+                    onSabbathClick()
+                  }
+                }}
+              >
+                <MessageCircle className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                Order
+              </a>
+            </Button>
+          </div>
         </div>
       </div>
     </article>
   )
 }
+
+const PRICE_BUCKETS = [
+  { id: "all", label: "All prices" },
+  { id: "under_100", label: "Under K100", max: 100 },
+  { id: "100_500", label: "K100 – K500", min: 100, max: 500 },
+  { id: "500_1000", label: "K500 – K1,000", min: 500, max: 1000 },
+  { id: "1000_plus", label: "K1,000 +", min: 1000 },
+] as const
+
+type PriceBucketId = (typeof PRICE_BUCKETS)[number]["id"]
 
 export function StoreSection() {
   const [products, setProducts] = useState<Product[]>([])
@@ -108,6 +153,8 @@ export function StoreSection() {
   const [sabbathOpen, setSabbathOpen] = useState(false)
   const [isSabbath, setIsSabbath] = useState(false)
   const [endsLabel, setEndsLabel] = useState<string | undefined>(undefined)
+  const [activeCategory, setActiveCategory] = useState<string>("all")
+  const [activeBucket, setActiveBucket] = useState<PriceBucketId>("all")
 
   useEffect(() => {
     function update() {
@@ -140,6 +187,31 @@ export function StoreSection() {
     }
   }, [])
 
+  const categories = useMemo(() => {
+    const set = new Set<string>()
+    for (const p of products) if (p.category) set.add(p.category)
+    return Array.from(set).sort((a, b) => a.localeCompare(b))
+  }, [products])
+
+  const filtered = useMemo(() => {
+    return products.filter((p) => {
+      if (activeCategory !== "all" && p.category !== activeCategory) return false
+      const minPrice = getMinSizePrice(p)
+      const maxPrice =
+        Array.isArray(p.sizes) && p.sizes.length > 0
+          ? p.sizes.reduce((m, s) => (s.price > m ? s.price : m), p.sizes[0].price)
+          : p.price
+      const bucket = PRICE_BUCKETS.find((b) => b.id === activeBucket)
+      if (!bucket || bucket.id === "all") return true
+      const bMin = "min" in bucket ? bucket.min : 0
+      const bMax = "max" in bucket ? bucket.max : Number.POSITIVE_INFINITY
+      // Product matches if any of its prices intersect the bucket range
+      return maxPrice >= bMin && minPrice <= bMax
+    })
+  }, [products, activeCategory, activeBucket])
+
+  const showFilters = products.length > 0
+
   return (
     <section
       id="store"
@@ -160,28 +232,41 @@ export function StoreSection() {
             </p>
           </div>
 
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-full border-primary/30 bg-background"
-          >
-            <a
-              href={buildWhatsappUrl(
-                `Hi ${SITE_CONFIG.businessName}! I'd like to ask about your products.`,
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                if (getSabbathInfo().isSabbath) {
-                  e.preventDefault()
-                  setSabbathOpen(true)
-                }
-              }}
+          <div className="flex flex-wrap items-center gap-2">
+            <InquiryDialog
+              trigger={
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-primary/30 bg-background"
+                >
+                  Send an inquiry
+                </Button>
+              }
+            />
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-full border-primary/30 bg-background"
             >
-              <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
-              Chat on WhatsApp
-            </a>
-          </Button>
+              <a
+                href={buildWhatsappUrl(
+                  `Hi ${SITE_CONFIG.businessName}! I'd like to ask about your products.`,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  if (getSabbathInfo().isSabbath) {
+                    e.preventDefault()
+                    setSabbathOpen(true)
+                  }
+                }}
+              >
+                <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
+                Chat on WhatsApp
+              </a>
+            </Button>
+          </div>
         </div>
 
         {isSabbath && (
@@ -209,6 +294,44 @@ export function StoreSection() {
             >
               <Link href="/sabbath">Learn more</Link>
             </Button>
+          </div>
+        )}
+
+        {showFilters && (
+          <div className="mt-8 rounded-2xl border border-border bg-card/60 p-3 sm:p-4">
+            <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+              <SlidersHorizontal className="h-4 w-4" aria-hidden="true" />
+              Filter
+            </div>
+            <div className="mt-3 flex flex-col gap-3">
+              {(categories.length > 0) && (
+                <div className="-mx-1 flex flex-wrap gap-1.5">
+                  <FilterPill
+                    label="All"
+                    active={activeCategory === "all"}
+                    onClick={() => setActiveCategory("all")}
+                  />
+                  {categories.map((c) => (
+                    <FilterPill
+                      key={c}
+                      label={c}
+                      active={activeCategory === c}
+                      onClick={() => setActiveCategory(c)}
+                    />
+                  ))}
+                </div>
+              )}
+              <div className="-mx-1 flex flex-wrap gap-1.5">
+                {PRICE_BUCKETS.map((b) => (
+                  <FilterPill
+                    key={b.id}
+                    label={b.label}
+                    active={activeBucket === b.id}
+                    onClick={() => setActiveBucket(b.id)}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -255,9 +378,27 @@ export function StoreSection() {
                 </a>
               </Button>
             </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-card p-10 text-center">
+              <p className="font-serif text-lg font-semibold">No matches</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Try a different category or price range.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4 rounded-full"
+                onClick={() => {
+                  setActiveCategory("all")
+                  setActiveBucket("all")
+                }}
+              >
+                Reset filters
+              </Button>
+            </div>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((p) => (
+              {filtered.map((p) => (
                 <ProductCard
                   key={p.id}
                   product={p}
@@ -301,3 +442,30 @@ export function StoreSection() {
     </section>
   )
 }
+
+function FilterPill({
+  label,
+  active,
+  onClick,
+}: {
+  label: string
+  active: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={[
+        "rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+        active
+          ? "border-primary bg-primary text-primary-foreground shadow-sm"
+          : "border-border bg-background text-foreground hover:border-primary/40 hover:bg-secondary",
+      ].join(" ")}
+    >
+      {label}
+    </button>
+  )
+}
+
