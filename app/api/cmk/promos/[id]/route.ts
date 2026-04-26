@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
+import { requireAdmin } from "@/lib/auth"
 
 export const runtime = "nodejs"
 
@@ -7,6 +8,10 @@ export async function PATCH(
   request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  // Verify admin authentication
+  const { error: authError } = await requireAdmin()
+  if (authError) return authError
+
   const { id } = await context.params
   const body = await request.json()
 
@@ -52,6 +57,10 @@ export async function DELETE(
   _request: Request,
   context: { params: Promise<{ id: string }> },
 ) {
+  // Verify admin authentication
+  const { error: authError } = await requireAdmin()
+  if (authError) return authError
+
   const { id } = await context.params
   const supabase = await createAdminClient()
   const { error } = await supabase.from("promos").delete().eq("id", id)

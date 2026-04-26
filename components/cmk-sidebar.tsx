@@ -114,6 +114,18 @@ export function CmkSidebar({ newInquiriesCount = 0 }: { newInquiriesCount?: numb
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          <SidebarMenuItem>
+            <form action="/auth/sign-out" method="POST">
+              <SidebarMenuButton
+                type="submit"
+                tooltip="Sign out"
+                className="w-full"
+              >
+                <LogOut aria-hidden="true" />
+                <span>Sign out</span>
+              </SidebarMenuButton>
+            </form>
+          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>

@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
+import { requireAdmin } from "@/lib/auth"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
 export async function GET() {
+  // Verify admin authentication
+  const { error: authError } = await requireAdmin()
+  if (authError) return authError
+
   const supabase = await createAdminClient()
   const { data, error } = await supabase.from("settings").select("*")
   if (error) {
@@ -18,6 +23,10 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  // Verify admin authentication
+  const { error: authError } = await requireAdmin()
+  if (authError) return authError
+
   const body = await request.json()
   const { key, value } = body
   if (typeof key !== "string" || !key) {

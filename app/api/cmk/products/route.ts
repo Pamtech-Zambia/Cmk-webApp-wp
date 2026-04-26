@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase/server"
 import { sanitizeSizes } from "@/lib/product"
+import { requireAdmin } from "@/lib/auth"
 
 export const runtime = "nodejs"
 
 export async function POST(request: Request) {
+  // Verify admin authentication
+  const { error: authError } = await requireAdmin()
+  if (authError) return authError
+
   const body = await request.json()
   const { name, description, price, image_url, category, sizes } = body
 
