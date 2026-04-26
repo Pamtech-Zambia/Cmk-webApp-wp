@@ -1,12 +1,22 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 import Image from "next/image"
-import { ShoppingBag, MessageCircle } from "lucide-react"
+import { ShoppingBag, MessageCircle, Moon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { createClient } from "@/lib/supabase/client"
 import type { Product } from "@/lib/types"
 import { SITE_CONFIG, buildWhatsappUrl } from "@/lib/config"
+import { getSabbathInfo, SABBATH_CLOSED_MESSAGE } from "@/lib/sabbath"
 
 function formatPrice(price: number): string {
   return `K${new Intl.NumberFormat("en-US", {
@@ -24,7 +34,13 @@ Could you please confirm availability and delivery details?
 Thank you!`
 }
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({
+  product,
+  onSabbathClick,
+}: {
+  product: Product
+  onSabbathClick: () => void
+}) {
   return (
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary">
@@ -69,6 +85,12 @@ function ProductCard({ product }: { product: Product }) {
               href={buildWhatsappUrl(buildOrderMessage(product))}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => {
+                if (getSabbathInfo().isSabbath) {
+                  e.preventDefault()
+                  onSabbathClick()
+                }
+              }}
             >
               <MessageCircle className="mr-1.5 h-4 w-4" aria-hidden="true" />
               Order
@@ -83,6 +105,20 @@ function ProductCard({ product }: { product: Product }) {
 export function StoreSection() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [sabbathOpen, setSabbathOpen] = useState(false)
+  const [isSabbath, setIsSabbath] = useState(false)
+  const [endsLabel, setEndsLabel] = useState<string | undefined>(undefined)
+
+  useEffect(() => {
+    function update() {
+      const info = getSabbathInfo()
+      setIsSabbath(info.isSabbath)
+      setEndsLabel(info.endsLabel)
+    }
+    update()
+    const id = setInterval(update, 60_000)
+    return () => clearInterval(id)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -135,12 +171,46 @@ export function StoreSection() {
               )}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={(e) => {
+                if (getSabbathInfo().isSabbath) {
+                  e.preventDefault()
+                  setSabbathOpen(true)
+                }
+              }}
             >
               <MessageCircle className="mr-2 h-4 w-4" aria-hidden="true" />
               Chat on WhatsApp
             </a>
           </Button>
         </div>
+
+        {isSabbath && (
+          <div className="mt-8 flex flex-col items-start gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                <Moon className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div>
+                <p className="font-serif text-base font-semibold text-foreground">
+                  {SABBATH_CLOSED_MESSAGE}
+                </p>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  {endsLabel
+                    ? `Orders resume after sunset. ${endsLabel}.`
+                    : "Orders resume after sunset on Saturday."}
+                </p>
+              </div>
+            </div>
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="shrink-0 rounded-full border-primary/30 bg-background"
+            >
+              <Link href="/sabbath">Learn more</Link>
+            </Button>
+          </div>
+        )}
 
         <div className="mt-10">
           {loading ? (
@@ -163,7 +233,16 @@ export function StoreSection() {
                 Fresh products are coming very soon. In the meantime, message us on WhatsApp
                 for custom orders.
               </p>
-              <Button asChild className="mt-6 rounded-full">
+              <Button
+                asChild
+                className="mt-6 rounded-full"
+                onClick={(e) => {
+                  if (getSabbathInfo().isSabbath) {
+                    e.preventDefault()
+                    setSabbathOpen(true)
+                  }
+                }}
+              >
                 <a
                   href={buildWhatsappUrl(
                     `Hi ${SITE_CONFIG.businessName}! I'd like to ask about a custom order.`,
@@ -179,12 +258,46 @@ export function StoreSection() {
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  onSabbathClick={() => setSabbathOpen(true)}
+                />
               ))}
             </div>
           )}
         </div>
       </div>
+
+      <Dialog open={sabbathOpen} onOpenChange={setSabbathOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+              <Moon className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <DialogTitle className="font-serif text-2xl">
+              {SABBATH_CLOSED_MESSAGE}
+            </DialogTitle>
+            <DialogDescription className="text-pretty">
+              {endsLabel
+                ? `Please come back after sunset. ${endsLabel}.`
+                : "Please come back after sunset on Saturday — we'll be glad to take your order then."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setSabbathOpen(false)}
+              className="rounded-full"
+            >
+              Close
+            </Button>
+            <Button asChild className="rounded-full">
+              <Link href="/sabbath">Learn more</Link>
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }

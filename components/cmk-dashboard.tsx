@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   Package,
   MessageCircleHeart,
+  Sparkles,
   X,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -283,6 +284,18 @@ export function CmkDashboard({ initialProducts }: { initialProducts: Product[] }
           </div>
 
           <div className="flex shrink-0 items-center gap-1.5">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="h-9 rounded-full px-3"
+              aria-label="Manage promos"
+            >
+              <Link href="/cmk/promos">
+                <Sparkles className="h-4 w-4 sm:mr-1.5" aria-hidden="true" />
+                <span className="hidden sm:inline">Promos</span>
+              </Link>
+            </Button>
             <Button
               asChild
               variant="outline"

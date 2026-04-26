@@ -15,3 +15,15 @@ export interface Wish {
   message: string
   created_at: string
 }
+
+export interface Promo {
+  id: string
+  title: string
+  description: string | null
+  image_url: string | null
+  cta_label: string | null
+  cta_url: string | null
+  expires_at: string
+  created_at: string
+  updated_at: string
+}
