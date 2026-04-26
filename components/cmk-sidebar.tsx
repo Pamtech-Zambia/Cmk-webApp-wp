@@ -5,9 +5,11 @@ import { usePathname } from "next/navigation"
 import {
   Home,
   Inbox,
+  LogOut,
   MessageCircleHeart,
   Package,
   Sparkles,
+  Users,
 } from "lucide-react"
 import { BrandLogo } from "@/components/brand-logo"
 import {
