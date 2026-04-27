@@ -10,6 +10,7 @@ import {
   Package,
   Settings,
   Sparkles,
+  Star,
   Users,
 } from "lucide-react"
 import { BrandLogo } from "@/components/brand-logo"
@@ -48,6 +49,7 @@ export function CmkSidebar({ newInquiriesCount = 0 }: { newInquiriesCount?: numb
       icon: Inbox,
       badge: newInquiriesCount > 0 ? newInquiriesCount : undefined,
     },
+    { href: "/cmk/reviews", label: "Reviews", icon: Star },
     { href: "/cmk/wishes", label: "Wishes", icon: MessageCircleHeart },
     { href: "/cmk/admins", label: "Admins", icon: Users },
     { href: "/cmk/settings", label: "Settings", icon: Settings },
