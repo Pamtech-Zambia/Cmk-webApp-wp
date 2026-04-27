@@ -7,6 +7,7 @@ import { AboutSection } from "@/components/about-section"
 import { SiteFooter } from "@/components/site-footer"
 import { SabbathBanner } from "@/components/sabbath-banner"
 import { PromosSection } from "@/components/promos-section"
+import { TestimonialsSection } from "@/components/testimonials-section"
 
 export default function HomePage() {
   return (
@@ -18,6 +19,7 @@ export default function HomePage() {
       <PromosSection />
       <WishesSection />
       <StoreSection />
+      <TestimonialsSection />
       <AboutSection />
       <SiteFooter />
     </main>

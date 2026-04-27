@@ -52,3 +52,20 @@ export interface Promo {
   created_at: string
   updated_at: string
 }
+
+export type ReviewStatus = "pending" | "approved" | "rejected"
+
+export interface Review {
+  id: string
+  customer_name: string
+  customer_email: string | null
+  rating: number
+  title: string | null
+  message: string
+  product_id: string | null
+  product_name: string | null
+  status: ReviewStatus
+  featured: boolean
+  created_at: string
+  updated_at: string
+}

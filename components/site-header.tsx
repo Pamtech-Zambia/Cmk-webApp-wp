@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: "/#wishes", label: "Send a Wish" },
   { href: "/wishes", label: "All Wishes" },
   { href: "/#store", label: "Order a Cake" },
+  { href: "/reviews", label: "Reviews" },
   { href: "/#about", label: "About" },
 ]
 

@@ -22,6 +22,15 @@ export async function GET() {
   return NextResponse.json({ settings: map })
 }
 
+// Allowed setting keys to prevent arbitrary data injection
+const ALLOWED_SETTINGS_KEYS = new Set([
+  "wishes_override",
+  "site_name",
+  "site_description",
+  "contact_email",
+  "contact_phone",
+])
+
 export async function PUT(request: Request) {
   // Verify admin authentication
   const { error: authError } = await requireAdmin()
@@ -32,6 +41,15 @@ export async function PUT(request: Request) {
   if (typeof key !== "string" || !key) {
     return NextResponse.json({ error: "Missing key." }, { status: 400 })
   }
+
+  // Validate that only allowed settings can be modified
+  if (!ALLOWED_SETTINGS_KEYS.has(key)) {
+    return NextResponse.json(
+      { error: `Invalid setting key: ${key}` },
+      { status: 400 }
+    )
+  }
+
   const supabase = await createAdminClient()
   const { error } = await supabase
     .from("settings")
