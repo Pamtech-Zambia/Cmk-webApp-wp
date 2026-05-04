@@ -2,49 +2,63 @@ import { createClient } from "@/lib/supabase/server"
 import { NextResponse } from "next/server"
 
 /**
- * Verifies that the current request is from an authenticated admin user.
- * Returns the user object if valid, or a NextResponse with 401/403 status if not.
- */
-export async function requireAdmin(): Promise<
-  | { user: { id: string; email: string }; error: null }
-  | { user: null; error: NextResponse }
-> {
-  const supabase = await createClient()
-  
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser()
+ * Core logic to check if the current session belongs to an admin.
+  */
+  export async function getAdminUser() {
+    const supabase = await createClient()
 
-  if (authError || !user) {
-    return {
-      user: null,
-      error: NextResponse.json(
-        { error: "Authentication required" },
-        { status: 401 }
-      ),
-    }
-  }
+      const {
+          data: { user },
+              error: authError,
+                } = await supabase.auth.getUser()
 
-  // Check if user is an admin
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", user.id)
-    .maybeSingle()
+                  if (authError || !user) return { user: null, is_admin: false }
 
-  if (profileError || !profile?.is_admin) {
-    return {
-      user: null,
-      error: NextResponse.json(
-        { error: "Admin access required" },
-        { status: 403 }
-      ),
-    }
-  }
+                    // Check the profiles table for the admin flag
+                      const { data: profile } = await supabase
+                          .from("profiles")
+                              .select("is_admin")
+                                  .eq("id", user.id)
+                                      .single()
 
-  return {
-    user: { id: user.id, email: user.email ?? "" },
-    error: null,
-  }
-}
+                                        return {
+                                            user,
+                                                is_admin: !!profile?.is_admin,
+                                                  }
+                                                  }
+
+                                                  /**
+                                                   * For use in API Routes (like your routes.ts).
+                                                    * Returns the user or a JSON error response.
+                                                     */
+                                                     export async function requireAdmin(): Promise<
+                                                       | { user: { id: string; email: string }; error: null }
+                                                         | { user: null; error: NextResponse }
+                                                         > {
+                                                           const { user, is_admin } = await getAdminUser()
+
+                                                             if (!user) {
+                                                                 return {
+                                                                       user: null,
+                                                                             error: NextResponse.json(
+                                                                                     { error: "Authentication required" },
+                                                                                             { status: 401 }
+                                                                                                   ),
+                                                                                                       }
+                                                                                                         }
+
+                                                                                                           if (!is_admin) {
+                                                                                                               return {
+                                                                                                                     user: null,
+                                                                                                                           error: NextResponse.json(
+                                                                                                                                   { error: "Admin access required" },
+                                                                                                                                           { status: 403 }
+                                                                                                                                                 ),
+                                                                                                                                                     }
+                                                                                                                                                       }
+
+                                                                                                                                                         return {
+                                                                                                                                                             user: { id: user.id, email: user.email ?? "" },
+                                                                                                                                                                 error: null,
+                                                                                                                                                                   }
+                                                                                                                                                                   }
