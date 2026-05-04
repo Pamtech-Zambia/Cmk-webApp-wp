@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { MessageCircle, Heart } from "lucide-react"
+import { MessageCircle, Heart, LogIn } from "lucide-react"
 import { BrandLogo } from "@/components/brand-logo"
 import { SITE_CONFIG, buildWhatsappUrl } from "@/lib/config"
 
@@ -40,6 +40,12 @@ export function SiteFooter() {
             <li>
               <Link href="#about" className="text-muted-foreground hover:text-primary">
                 About
+              </Link>
+            </li>
+            <li>
+              <Link href="/auth/login" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary">
+                <LogIn className="h-3.5 w-3.5" aria-hidden="true" />
+                Admin Login
               </Link>
             </li>
           </ul>

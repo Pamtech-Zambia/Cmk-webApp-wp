@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 import {
   Home,
   Inbox,
+  LogIn,
   LogOut,
   MessageCircleHeart,
   Package,
@@ -116,6 +117,14 @@ export function CmkSidebar({ newInquiriesCount = 0 }: { newInquiriesCount?: numb
               <Link href="/" target="_self">
                 <Home aria-hidden="true" />
                 <span>Home</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild tooltip="Login">
+              <Link href="/auth/login">
+                <LogIn aria-hidden="true" />
+                <span>Login</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
