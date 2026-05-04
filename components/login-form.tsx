@@ -108,6 +108,14 @@ export function LoginForm({
               "Sign in"
             )}
           </Button>
+          <div className="text-center">
+            <Link
+              href="/auth/forgot-password"
+              className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+            >
+              Forgot your password?
+            </Link>
+          </div>
         </form>
       </CardContent>
     </Card>

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import { Menu, X, LogIn } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { BrandLogo } from "@/components/brand-logo"
 import { SITE_CONFIG } from "@/lib/config"
@@ -43,9 +43,14 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden md:flex">
+        <div className="hidden items-center gap-2 md:flex">
           <Button asChild size="sm" className="rounded-full">
             <Link href="#wishes">Send a Wish</Link>
+          </Button>
+          <Button asChild variant="ghost" size="sm" className="rounded-full">
+            <Link href="/auth/login" aria-label="Admin login">
+              <LogIn className="h-4 w-4" aria-hidden="true" />
+            </Link>
           </Button>
         </div>
 
@@ -80,6 +85,12 @@ export function SiteHeader() {
           <Button asChild className="mt-2 w-full rounded-full">
             <Link href="#wishes" onClick={() => setOpen(false)}>
               Send a Wish
+            </Link>
+          </Button>
+          <Button asChild variant="outline" className="mt-2 w-full rounded-full">
+            <Link href="/auth/login" onClick={() => setOpen(false)}>
+              <LogIn className="mr-2 h-4 w-4" aria-hidden="true" />
+              Admin Login
             </Link>
           </Button>
         </nav>
